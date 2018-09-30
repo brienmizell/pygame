@@ -40,7 +40,7 @@ class Bird(pygame.sprite.Sprite):
     CLIMB_DURATION: The number of milliseconds it takes the bird to
         execute a complete climb.
     """
-    WIDTH = height = 32
+    WIDTH = HEIGHT = 32
     SINK_SPEED = 0.18
     CLIMB_SPEED = 0.32
     CLIMB_DURATION = 333.3
@@ -66,7 +66,30 @@ class Bird(pygame.sprite.Sprite):
       self.img_wingup, self.img_wingdown = images
       self._mask_wingup = pygame.mask.from_surface(self._img_wingdown)
       self._mask_wingdown = pygame.mask.from_surface(self._img_wingdown)
-      
+
+  def update(self, delta_frame = 1):
+    """ delta_frame is number of frames elapsed
+    
+    this function will use the cosine function to acheive a smooth climb (flap)
+    """
+    if self.msec_to_climb > 0 :
+      frac_climb_done = 1 - self.msec_to_climb / Bird.CLIMB_DURATION
+
+      self.y -= (bird.CLIMB_SPEED) * frames_to_msec(delta_frame) * (1-math.cos(frac_climb_done * math.pi))
+
+      self.msec_to_climb -= frames_to_msec(delta_frame)
+    else:
+      self.y += Bird.SINK_SPEED * frames_to_msec(delta_frame)
+    @property
+    def image(self):
+      if pygame.time.get_ticks() % 500 >= 250:
+        return self._mask_wingdown
+      else:
+        return self._mask_wingup
+    @property
+    def rect(self):
+      return rect(self.x, self.y, Bird.WIDTH, Bird.HEIGHT)
+
       def mask(self):
         if pygame.time.get_ticks() % 500 >= 250:
           return self._mask_wingup
