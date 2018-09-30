@@ -80,27 +80,94 @@ class Bird(pygame.sprite.Sprite):
       self.msec_to_climb -= frames_to_msec(delta_frame)
     else:
       self.y += Bird.SINK_SPEED * frames_to_msec(delta_frame)
-    @property
-    def image(self):
-      if pygame.time.get_ticks() % 500 >= 250:
-        return self._mask_wingdown
-      else:
-        return self._mask_wingup
-    @property
-    def rect(self):
-      return rect(self.x, self.y, Bird.WIDTH, Bird.HEIGHT)
+  @property
+  def image(self):
+    if pygame.time.get_ticks() % 500 >= 250:
+      return self._mask_wingdown
+    else:
+      return self._mask_wingup
+  @property
+  def rect(self):
+    return rect(self.x, self.y, Bird.WIDTH, Bird.HEIGHT)
 
-      def mask(self):
-        if pygame.time.get_ticks() % 500 >= 250:
-          return self._mask_wingup
-        else:
-          return self._mask_wingdown
+  def mask(self):
+    if pygame.time.get_ticks() % 500 >= 250:
+      return self._mask_wingup
+    else:
+      return self._mask_wingdown
 
-        """Get a bitmask for use in collision detection.
+    """Get a bitmask for use in collision detection.
 
-        The bitmask excludes all pixels in self.image with a
-        transparency greater than 127."""
+    The bitmask excludes all pixels in self.image with a
+    transparency greater than 127."""
 
+class PipePair(pygame.sprite.Sprite):
+  """Represents an obstacle.
+
+    A PipePair has a top and a bottom pipe, and only between them can
+    the bird pass -- if it collides with either part, the game is over.
+
+    Attributes:
+    x: The PipePair's X position.  This is a float, to make movement
+        smoother.  Note that there is no y attribute, as it will only
+        ever be 0.
+    image: A pygame.Surface which can be blitted to the display surface
+        to display the PipePair.
+    mask: A bitmask which excludes all pixels in self.image with a
+        transparency greater than 127.  This can be used for collision
+        detection.
+    top_pieces: The number of pieces, including the end piece, in the
+        top pipe.
+    bottom_pieces: The number of pieces, including the end piece, in
+        the bottom pipe.
+
+    Constants:
+    WIDTH: The width, in pixels, of a pipe piece.  Because a pipe is
+        only one piece wide, this is also the width of a PipePair's
+        image.
+    PIECE_HEIGHT: The height, in pixels, of a pipe piece.
+    ADD_INTERVAL: The interval, in milliseconds, in between adding new
+        pipes.
+    """
+  WIDTH = 80
+  PIECE_HEIGHT = 32
+  ADD_INTERVAL = 3000
+
+  def __init__(self, pip_end_img, pipe_body_img):
+
+    self.x - float(WIN_WIDTH -1)
+    self.core_counted = False
+    self.image = pygame((PipePair.WIDTH, WIN_HEIGHT), SRCALPHA)
+    self.image.convert()
+    self.image.fill((0, 0, 0))
+
+    total_pipe_body_pieces = int(WIN_HEIGHT -
+    3 * WIN_HEIGHT -
+    3 * PipePair.PIECE_HEIGHT) /
+    PipePair.PIECE_HEIGHT
+    
+    )
+  self.bottom_pieces = randint(1, total_pipe_body_pieces)
+  self.top_pieces = randint(1, total_pipe_body_pieces)
+
+  for i in range(1, self.bottom_pieces):
+    piece_pos = (0, WIN_HEIGHT - 1 * PipePair.PIECE_HEIGHT)
+    self.image.blit(pipe_body_img, piece_pos)
+
+  bottom_pipe_end_y = WIN_HEIGHT - self.bottom_height_px)
+  bottom_end_pipe_pos = (0, bottom_pipe_end_y - PipePair.PIECE_HEIGHT)
+  self.image.blit(pipe_end_img, bottom_end_pipe_pos)
+
+  for in in range(self.top_pieces):
+    self.image.blit(pipe_body_img, (0, i* PipePair.PIECE_HEIGHT))
+  
+  total_pipe_end_x = self.top_height_px
+  self.image.blit(pipe_end_img, (o, total_pipe_end_x))
+
+  self.top_pieces += 1
+  self.bottom_pieces +=1
+
+  self.mask = pygame.mask.from_surface(self.image)
 
 def load_images():
   """load images required by images and return dict of them
