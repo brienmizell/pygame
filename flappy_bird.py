@@ -102,33 +102,34 @@ class Bird(pygame.sprite.Sprite):
     transparency greater than 127."""
 
 class PipePair(pygame.sprite.Sprite):
-  """Represents an obstacle.
+  """
+  Represents an obstacle.
 
-    A PipePair has a top and a bottom pipe, and only between them can
-    the bird pass -- if it collides with either part, the game is over.
+  A PipePair has a top and a bottom pipe, and only between them can
+  the bird pass -- if it collides with either part,the game is over.
 
-    Attributes:
-    x: The PipePair's X position.  This is a float, to make movement
-        smoother.  Note that there is no y attribute, as it will only
-        ever be 0.
-    image: A pygame.Surface which can be blitted to the display surface
-        to display the PipePair.
-    mask: A bitmask which excludes all pixels in self.image with a
-        transparency greater than 127.  This can be used for collision
-        detection.
-    top_pieces: The number of pieces, including the end piece, in the
-        top pipe.
-    bottom_pieces: The number of pieces, including the end piece, in
-        the bottom pipe.
+  Attributes:
+  x: The PipePair's X position.  This is a float, to make movement
+  smoother.  Note that there is no y attribute, as it will only
+  ever be 0.
+  image: A pygame.Surface which can be blitted to the display surface
+  to display the PipePair.
+  mask: A bitmask which excludes all pixels in self.image with a
+  transparency greater than 127.  This can be used for collision
+  detection.
+  top_pieces: The number of pieces, including the end piece, in the
+  top pipe.
+  bottom_pieces: The number of pieces, including the end piece, in
+  the bottom pipe.
 
-    Constants:
-    WIDTH: The width, in pixels, of a pipe piece.  Because a pipe is
-        only one piece wide, this is also the width of a PipePair's
-        image.
-    PIECE_HEIGHT: The height, in pixels, of a pipe piece.
-    ADD_INTERVAL: The interval, in milliseconds, in between adding new
-        pipes.
-    """
+  Constants:
+  WIDTH: The width, in pixels, of a pipe piece.  Because a pipe is
+  only one piece wide, this is also the width of a PipePair's
+  image.
+  PIECE_HEIGHT: The height, in pixels, of a pipe piece.
+  ADD_INTERVAL: The interval, in milliseconds, in between adding new
+  pipes.
+  """
   WIDTH = 80
   PIECE_HEIGHT = 32
   ADD_INTERVAL = 3000
@@ -168,6 +169,28 @@ class PipePair(pygame.sprite.Sprite):
   self.bottom_pieces +=1
 
   self.mask = pygame.mask.from_surface(self.image)
+
+@property
+def top_height_px(self):
+  return self.top_pieces * PipePair.PIECE_HEIGHT
+
+@property
+def bottom_height_px(self):
+  return self. bottom_pieces * PipePair.PIECE_HEIGHT
+
+@ property
+def visible(self):
+  return -PipePair.WIDTH < self.x < WIN_WIDTH
+
+@property
+def rect(self):
+  return rect(self.x, 0, PipePair.WIDTH, PipePair.PIECE_HEIGHT)
+
+def update(self, delta_frames -1):
+  self.x -= ANIMATION_SPEED * frames_to_msec(delta_frames)
+
+def collides_width(self, bird):
+  return pygame.sprite.collide_mask(self, bird)
 
 def load_images():
   """load images required by images and return dict of them
