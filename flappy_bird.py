@@ -2,6 +2,7 @@ import math
 import os
 from random import randint
 from collections import deque
+import time
 
 import pygame
 from pygame.locals import *
@@ -42,6 +43,7 @@ class Bird(pygame.sprite.Sprite):
   SINK_SPEED = 0.18
   CLIMB_SPEED = 0.33
   CLIMB_DURATION = 333.3
+
 
   def __init__(self, x, y, msec_to_climb, images):
     '''Initialise a new Bird instance.
@@ -332,12 +334,21 @@ def main():
         paused = not paused
       elif e.type == MOUSEBUTTONUP or (e.type == KEYUP and e.key in (K_UP, K_RETURN, K_SPACE)):
         bird.msec_to_climb = Bird.CLIMB_DURATION
+        wing = pygame.mixer.Sound('sfx_wing.wav')
+        wing.play()
+
+
     if paused:
       continue # don't draw anything
 
     pipe_collision = any(p.collides_with(bird)for p in pipes)
 
     if pipe_collision or 0 >= bird.y or bird.y >= WIN_HEIGHT - Bird.HEIGHT:
+      hit = pygame.mixer.Sound('sfx_hit.wav')
+      hit.play()
+
+      done = paused
+      time.sleep(2) 
       done = True
     
     for x in (0, WIN_WIDTH / 2):
@@ -345,7 +356,7 @@ def main():
 
     while pipes and not pipes[0].visible:
       pipes.popleft()
-      
+
     # update and display score
     for p in pipes:
       p.update()
@@ -357,6 +368,8 @@ def main():
     # update and show score
     for p in pipes:
       if p.x + PipePair.WIDTH < bird.x and not p.score_counted == True:
+        point = pygame.mixer.Sound('sfx_point.wav')
+        point.play()
         score += 1
         p.score_counted = True
 
